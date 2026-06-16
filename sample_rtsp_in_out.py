@@ -475,18 +475,13 @@ def main(args, requested_pgie=None, config=None, disable_probe=False):
     elif requested_pgie == "nvinfer" and config != None:
         pgie.set_property('config-file-path', config)
     else:
-        pgie.set_property('config-file-path', "config_infer_primary_yoloV8.txt")
+        pgie.set_property('config-file-path', "dstest3_pgie_config.txt")
     pgie_batch_size=pgie.get_property("batch-size")
     if(pgie_batch_size != number_sources):
         print("WARNING: Overriding infer-config batch-size",pgie_batch_size," with number of sources ", number_sources," \n")
         pgie.set_property("batch-size",number_sources)
 
 
-    sgie1 = Gst.ElementFactory.make("nvinfer", "secondary1-nvinference-engine")
-    if not sgie1:
-        sys.stderr.write(" Unable to make sgie1 \n")
-
-    sgie1.set_property('config-file-path', "config_infer_primary_yoloV8_face.txt")
     
     tiler_rows=int(math.sqrt(number_sources))
     tiler_columns=int(math.ceil((1.0*number_sources)/tiler_rows))
@@ -505,7 +500,7 @@ def main(args, requested_pgie=None, config=None, disable_probe=False):
     if nvdslogger:
         pipeline.add(nvdslogger)
     pipeline.add(tracker)
-    pipeline.add(sgie1)
+ 
     pipeline.add(tiler)
     pipeline.add(nvvidconv)
     pipeline.add(nvosd)
@@ -520,8 +515,8 @@ def main(args, requested_pgie=None, config=None, disable_probe=False):
     pgie.link(queue2)
     queue2.link(tracker)
     tracker.link(queue3)
-    queue3.link(sgie1)
-    sgie1.link(queue4)
+  
+    queue3.link(queue4)
     if nvdslogger:
         queue4.link(nvdslogger)
 

@@ -4,8 +4,8 @@
 *.onnx
 *.cfg
 *.data
-
-
+config_infer_primary_yoloV8.txt
+config_infer_primary_yoloV8_face.txt
 yolo_v4_models/
 # Python cache
 __pycache__/
