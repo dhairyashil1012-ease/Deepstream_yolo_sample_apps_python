@@ -58,9 +58,13 @@ Expected output should display your GPU information.
 Clone the repository on the host machine:
 
 ```bash
+
+Make one Directory inside that 
+cd directory and clone the repo.
+
 git clone https://github.com/dhairyashil1012-ease/Deepstream_yolo_sample_apps_python.git
 
-cd Deepstream_yolo_sample_apps_python
+
 ```
 
 ---
@@ -86,7 +90,9 @@ docker pull nvcr.io/nvidia/deepstream:8.0-gc-triton-devel
  
  ## Close terminal and Open New Terminal 
 ```bash 
- cd Deepstream_yolo_sample_apps_python
+ go inside the main directory where you clone your repo. not inside the clone repo.
+ cd main_directory 
+
  xhost +
 ```
 
@@ -120,6 +126,7 @@ code .
 # Navigate to Application Directory
 
 Inside the container:
+you will see you main clone git repo. inside the sources 
 
 ```bash
 cd /opt/nvidia/deepstream/deepstream-8.0/sources/deepstream_sample_app
@@ -305,7 +312,7 @@ ERROR: ../nvdsinfer/nvdsinfer_model_builder.cpp:563 failed to build network.
 ```
 
 ```bash
-Check file location in on 
+Check file location in
 
 ls /opt/nvidia/deepstream/deepstream-8.0/samples/models/Primary_Detector/
 
@@ -321,7 +328,12 @@ onnx-file=../../../../../../samples/models/Primary_Detector/resnet18_trafficcamn
 model-engine-file=../../../../../..//samples/models/Primary_Detector/resnet18_trafficcamnet_pruned.onnx_b1_gpu0_fp16.engine
 ```
 
-# This aboves are model python suppose one ../ one directory out . Your aim is load the model so you just have to travel from our code file one directory out still your not getting deepstream-8.0 this directory in your container . In my situation I have mounted my host directory with container inside the source so for that why  in my config file you get to see 
+This is the traveling path of model file .
+
+../../ :- one '../' shows that one directory so our models present in deepstream-8.0/samples/models/Prrimary.../ in this directory but our code is present in deepstream-8.0/sources/deepstream_apps_python 
+so one '../' represent to one directory . our common directory is deepstream-8.0 so you have to add '../' this in your config file till you not getting and deepstream-8.0 dir.  you have to look from your main code directory where your actual code is present . so dont confuse in this just update the path of model. 
+
+
 ``` bash
 ../../samples/models/Primary_Detector/resnet18_trafficcamnet_pruned.onnx
 ```
@@ -469,6 +481,7 @@ Restart the application after making changes.
 ```bash
 python3 sample_rtsp_in_out.py -i file:///opt/nvidia/deepstream/deepstream-8.0/samples/streams/sample_720p.mp4 file:///opt/nvidia/deepstream/deepstream-8.0/samples/streams/sample_1080_h265.mp4
 
+change in config file in model name b1 convert to b2 for 2 inputs 
 OR for RTSP input understand what is rtsp and then try to execute because rtsp means real time streaming protocol 
 
 # For example
