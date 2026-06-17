@@ -294,6 +294,40 @@ for example file path just for reference deepstream all sample files are present
 python3 sample_rtsp_in_out.py -i file:///opt/nvidia/deepstream/deepstream-8.0/samples/streams/sample_720p.mp4
 ```
 
+## If you encounter an error like :
+
+```bash
+ERROR: ../nvdsinfer/nvdsinfer_model_builder.cpp:58 Cannot access ONNX file '/opt/nvidia/deepstream/deepstream-8.0/sources/deepstream_sample_app/../../../../../../samples/models/Primary_Detector/resnet18_trafficcamnet_pruned.onnx'
+ERROR: ../nvdsinfer/nvdsinfer_model_builder.cpp:722 failed to build network since parsing model errors.
+ERROR: ../nvdsinfer/nvdsinfer_model_builder.cpp:563 failed to build network.
+0:00:03.376858854   346     0x34020120 ERROR                nvinfer gstnvinfer.cpp:679:gst_nvinfer_logger:<primary-inference> NvDsInferContext[UID 1]: Error in NvDsInferContextImpl::buildModel() <nvdsinfer_context_impl.cpp:2143> [UID = 1]: build engine file failed
+0:00:03.815471579   346     0x34020120 ERROR                nvinfer gstnvinfer.cpp:679:gst_nvinfer_logger:<primary-inference> NvDsInferContext[UID 1]: Error in NvDsInferContextImpl::generateBackendContext() <nvdsinfer_context_impl.cpp:2229> [UID = 1]: build backend context failed
+```
+
+```bash
+Check file location in on 
+
+ls /opt/nvidia/deepstream/deepstream-8.0/samples/models/Primary_Detector/
+
+```
+ 
+# you will get to see something like this files .
+```bash
+cal_trt.bin  labels.txt  resnet18_trafficcamnet_pruned.onnx
+```
+# So go and check config files path you just need to update the path of file .
+```bash
+onnx-file=../../../../../../samples/models/Primary_Detector/resnet18_trafficcamnet_pruned.onnx
+model-engine-file=../../../../../..//samples/models/Primary_Detector/resnet18_trafficcamnet_pruned.onnx_b1_gpu0_fp16.engine
+```
+
+# This aboves are model python suppose one ../ one directory out . Your aim is load the model so you just have to travel from our code file one directory out still your not getting deepstream-8.0 this directory in your container . In my situation I have mounted my host directory with container inside the source so for that why  in my config file you get to see 
+``` bash
+../../samples/models/Primary_Detector/resnet18_trafficcamnet_pruned.onnx
+```
+
+# Once you update the config file re-run the script by taking the reference of above command.
+
 Once the pipeline starts successfully, an RTSP server is created on your ubuntu terminal .
 
 ---
@@ -420,15 +454,14 @@ Example contents:
 
 ```text
 labels.txt
-
 resnet18_trafficcamnet_pruned.onnx
-python3 sample_rtsp_in_out.py -i file:///opt/nvidia/deepstream/deepstream-8.0/samples/streams/sample_720p.mp4 file:///opt/nvidia/deepstream/deepstream-8.0/samples/streams/sample_1080_h265.mp4
 resnet18_trafficcamnet_pruned.onnx_b1_gpu0_fp16.engine
 ```
 
 If model files are located elsewhere, update the corresponding paths in the configuration files.
 
 Restart the application after making changes.
+
 
 ---
 # For Multiple Inputs 
