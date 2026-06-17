@@ -79,6 +79,17 @@ Pull the image:
 docker pull nvcr.io/nvidia/deepstream:8.0-gc-triton-devel
 ```
 
+# Display Access:
+ ```bash
+ export DISPLAY=:0
+ ```
+ 
+ ## Close terminal and Open New Terminal 
+```bash 
+ cd Deepstream_yolo_sample_apps_python
+ xhost +
+```
+
 ---
 
 # Launch DeepStream Container
@@ -86,21 +97,32 @@ docker pull nvcr.io/nvidia/deepstream:8.0-gc-triton-devel
 Mount the DeepStream sources directory inside the container.
 
 ```bash
-docker run -it --rm \
---gpus all \
---network host \
--v /opt/nvidia/deepstream/deepstream-8.0/sources:/opt/nvidia/deepstream/deepstream-8.0/sources \
-nvcr.io/nvidia/deepstream:8.0-gc-triton-devel
+docker run -it  --network=host --gpus all -e DISPLAY=$DISPLAY --device /dev/snd -v /tmp/.X11-unix/:/tmp/.X11-unix -v $(pwd)/Deepstream_yolo_sample_apps_python:/opt/nvidia/deepstream/deepstream-8.0/sources/deepstream_sample_app nvcr.io/nvidia/deepstream:8.0-gc-triton-devel
 ```
 
 ---
+
+
+## Come out side the container without stop
+
+```bash
+ Ctrl+P followed by Ctrl+Q
+ ```
+
+# Open vscode :
+```bash
+code .
+```
+
+# Attach Container Shell in vscode terminal
+
 
 # Navigate to Application Directory
 
 Inside the container:
 
 ```bash
-cd /opt/nvidia/deepstream/deepstream-8.0/sources/Deep_Stream_Apps_Yolo/DeepStream_Yolo_Apps/deepstream_python_apps/apps/Sample_test_rtsp
+cd /opt/nvidia/deepstream/deepstream-8.0/sources/deepstream_sample_app
 ```
 
 ---
@@ -144,6 +166,7 @@ python3 -c "import cuda; print('cuda-python installed successfully')"
 ```text
 Sample_test_rtsp/
 │
+|──common/
 ├── sample_rtsp_in_out.py
 │
 ├── dstest3_pgie_config.txt
@@ -249,21 +272,41 @@ Responsible for:
 
 ---
 
-# Running the Application
+# Running the Application for only one input
 
 Start the pipeline:
 
+Before passing any 
 ```bash
-python3 sample_rtsp_in_out.py
+To run:
+  $ python3 deepstream_test_3.py -i <uri1> [uri2] ... [uriN] [--no-display] [--silent]
+e.g.
+  $ python3 deepstream_test_3.py -i file:///home/ubuntu/video1.mp4 file:///home/ubuntu/video2.mp4
+  $ python3 deepstream_test_3.py -i rtsp://127.0.0.1/video1 rtsp://127.0.0.1/video2 -s
 ```
 
-If your application supports command-line arguments, refer to the source code.
+
+for example file path just for reference deepstream all sample files are present in streams directory :
+``` file:///opt/nvidia/deepstream/deepstream-8.0/samples/streams/sample_720p.mp4  ```
+
+
+```bash
+python3 sample_rtsp_in_out.py -i file:///opt/nvidia/deepstream/deepstream-8.0/samples/streams/sample_720p.mp4
+```
+
+Once the pipeline starts successfully, an RTSP server is created on your ubuntu terminal .
 
 ---
 
-# Viewing RTSP Output
+# Viewing RTSP Output use your terminal of ubuntu . Go on ubuntu Terminal
+```bash
+sudo apt update
+sudo apt install ffmpeg
 
-Once the pipeline starts successfully, an RTSP server is created.
+```
+
+
+Once the pipeline starts successfully, an RTSP server is created on your ubuntu terminal .
 
 View the stream using FFplay:
 
@@ -271,7 +314,7 @@ View the stream using FFplay:
 ffplay rtsp://<SERVER_IP>:8554/<STREAM_NAME>
 ```
 
-Example:
+Example command to execute on terminal after above steps:
 
 ```bash
 ffplay rtsp://localhost:8554/ds-test
@@ -287,21 +330,6 @@ Supported clients:
 
 ---
 
-# Verifying RTSP Server
-
-Check whether the RTSP server is running:
-
-```bash
-netstat -tulpn | grep 8554
-```
-
-Expected result:
-
-```text
-tcp        0      0 0.0.0.0:8554
-```
-
----
 
 # Troubleshooting
 
@@ -394,7 +422,7 @@ Example contents:
 labels.txt
 
 resnet18_trafficcamnet_pruned.onnx
-
+python3 sample_rtsp_in_out.py -i file:///opt/nvidia/deepstream/deepstream-8.0/samples/streams/sample_720p.mp4 file:///opt/nvidia/deepstream/deepstream-8.0/samples/streams/sample_1080_h265.mp4
 resnet18_trafficcamnet_pruned.onnx_b1_gpu0_fp16.engine
 ```
 
@@ -403,20 +431,18 @@ If model files are located elsewhere, update the corresponding paths in the conf
 Restart the application after making changes.
 
 ---
-
-## RTSP Stream Not Accessible
-
-Verify:
+# For Multiple Inputs 
 
 ```bash
-netstat -tulpn | grep 8554
+python3 sample_rtsp_in_out.py -i file:///opt/nvidia/deepstream/deepstream-8.0/samples/streams/sample_720p.mp4 file:///opt/nvidia/deepstream/deepstream-8.0/samples/streams/sample_1080_h265.mp4
+
+OR for RTSP input understand what is rtsp and then try to execute because rtsp means real time streaming protocol 
+
+# For example
+
+python3 sample_rtsp_in_out.py -i rtsp://127.0.0.1/video1 rtsp://127.0.0.1/video2
 ```
 
-Check:
-
-* Container started with `--network host`
-* RTSP port is available
-* Firewall is not blocking the port
 
 ---
 
